@@ -25,9 +25,9 @@ import org.sonar.check.Rule;
 import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.java.resolve.MethodJavaType;
 import org.sonar.java.resolve.ParametrizedTypeJavaType;
-import org.sonar.java.resolve.SymbolMetadataResolve;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata.AnnotationInstance;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -73,17 +73,17 @@ public class RedundantAbstractMethodCheck extends IssuableSubscriptionVisitor {
     return !method.isParametrized() && overridee.isParametrized();
   }
 
-  private static boolean differentThrows(JavaSymbol.MethodJavaSymbol method, JavaSymbol.MethodJavaSymbol overridee) {
+  private static boolean differentThrows(Symbol.MethodSymbol method, Symbol.MethodSymbol overridee) {
     return !ImmutableMultiset.copyOf(method.thrownTypes()).equals(ImmutableMultiset.copyOf(overridee.thrownTypes()));
   }
 
-  private static boolean differentReturnType(JavaSymbol.MethodJavaSymbol method, JavaSymbol.MethodJavaSymbol overridee) {
+  private static boolean differentReturnType(Symbol.MethodSymbol method, Symbol.MethodSymbol overridee) {
     Type methodResultType = resultType(method);
     Type overrideeResultType = resultType(overridee);
     return specializationOfReturnType(methodResultType.erasure(), overrideeResultType.erasure()) || useRawTypeOfParametrizedType(methodResultType, overrideeResultType);
   }
 
-  private static Type resultType(JavaSymbol.MethodJavaSymbol method) {
+  private static Type resultType(Symbol.MethodSymbol method) {
     return ((MethodJavaType) method.type()).resultType();
   }
 
@@ -119,7 +119,7 @@ public class RedundantAbstractMethodCheck extends IssuableSubscriptionVisitor {
     return false;
   }
 
-  private static boolean differentAnnotations(SymbolMetadataResolve methodMetadata, SymbolMetadataResolve overrideeMetadata) {
+  private static boolean differentAnnotations(SymbolMetadata methodMetadata, SymbolMetadata overrideeMetadata) {
     for (AnnotationInstance annotation : methodMetadata.annotations()) {
       Type type = annotation.symbol().type();
       if (!type.is("java.lang.Override") && !overrideeMetadata.isAnnotatedWith(type.fullyQualifiedName())) {

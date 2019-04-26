@@ -100,7 +100,7 @@ public class AnonymousClassShouldBeLambdaCheck extends BaseTreeVisitor implement
       .map(ClassJavaType::getSymbol)
       // collect all the methods declared in hierarchy
       .flatMap(superType -> superType.memberSymbols().stream().filter(Symbol::isMethodSymbol).filter(Symbol::isAbstract))
-      .map(JavaSymbol.MethodJavaSymbol.class::cast)
+      .map(Symbol.MethodSymbol.class::cast)
       // remove objects methods redefined in interfaces
       .filter(symbol -> !isObjectMethod(symbol))
       // always take same symbol if method is redeclared over and over in hierarchy
@@ -109,7 +109,7 @@ public class AnonymousClassShouldBeLambdaCheck extends BaseTreeVisitor implement
       .size() == 1;
   }
 
-  private static boolean isObjectMethod(JavaSymbol.MethodJavaSymbol methodSymbol) {
+  private static boolean isObjectMethod(Symbol.MethodSymbol methodSymbol) {
     Symbol overridenSymbol = methodSymbol.overriddenSymbol();
     return overridenSymbol != null && overridenSymbol.owner().type().is(JAVA_LANG_OBJECT);
   }

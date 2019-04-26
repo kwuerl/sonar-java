@@ -119,17 +119,17 @@ public class ArrayForVarArgCheck extends IssuableSubscriptionVisitor {
     }
   }
 
-  private static boolean isCallingOverload(JavaSymbol.MethodJavaSymbol methodSymbol, ExpressionTree lastArg) {
+  private static boolean isCallingOverload(Symbol.MethodSymbol methodSymbol, ExpressionTree lastArg) {
     MethodTree enclosing = ExpressionUtils.getEnclosingMethod(lastArg);
     return enclosing != null && haveSameParamButLast(enclosing.symbol(), methodSymbol);
   }
 
-  private static boolean haveSameParamButLast(Symbol.MethodSymbol enclosing, JavaSymbol.MethodJavaSymbol methodSymbol) {
+  private static boolean haveSameParamButLast(Symbol.MethodSymbol enclosing, Symbol.MethodSymbol methodSymbol) {
     return enclosing.name().equals(methodSymbol.name())
       && IntStream.range(0, enclosing.parameterTypes().size()).allMatch(i -> enclosing.parameterTypes().get(i) == methodSymbol.parameterTypes().get(i));
   }
 
-  private static boolean lastParamHasSameType(JavaSymbol.MethodJavaSymbol methodSymbol, @Nullable MethodJavaType methodType, Type lastArgType) {
+  private static boolean lastParamHasSameType(Symbol.MethodSymbol methodSymbol, @Nullable MethodJavaType methodType, Type lastArgType) {
     Type lastParamType = methodType != null ? getLastParameterType(methodType.argTypes()) : getLastParameterType(methodSymbol.parameterTypes());
     return lastArgType.equals(lastParamType);
   }
