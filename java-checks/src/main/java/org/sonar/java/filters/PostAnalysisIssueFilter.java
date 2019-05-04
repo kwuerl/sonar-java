@@ -26,9 +26,11 @@ import org.sonar.api.scan.issue.filter.IssueFilterChain;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 
+import java.util.Arrays;
+
 public class PostAnalysisIssueFilter implements JavaFileScanner, SonarJavaIssueFilter {
 
-  private static final Iterable<JavaIssueFilter> DEFAULT_ISSUE_FILTERS = ImmutableList.<JavaIssueFilter>of(
+  private static final Iterable<JavaIssueFilter> DEFAULT_ISSUE_FILTERS = Arrays.asList(
     new EclipseI18NFilter(),
     new LombokFilter(),
     new SuppressWarningFilter(),
