@@ -15,6 +15,9 @@ import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 
+/**
+ * TODO shared identifiers in enum
+ */
 public class JParserTest {
 
   @Test

@@ -623,14 +623,15 @@ public class JParser {
       );
     }
 
+    IdentifierTree identifier = convertSimpleName(e.getName());
     return new EnumConstantTreeImpl(
       convertModifiers(e.modifiers()),
-      convertSimpleName(e.getName()),
+      identifier,
       new NewClassTreeImpl(
         arguments,
         classBody
       ).completeWithIdentifier(
-        convertSimpleName(e.getName())
+        identifier
       ),
       null // TODO separatorToken
     );
