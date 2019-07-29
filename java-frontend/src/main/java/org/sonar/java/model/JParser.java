@@ -54,6 +54,7 @@ import org.eclipse.jdt.core.dom.MemberValuePair;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.Modifier;
+import org.eclipse.jdt.core.dom.ModuleDeclaration;
 import org.eclipse.jdt.core.dom.NormalAnnotation;
 import org.eclipse.jdt.core.dom.NullLiteral;
 import org.eclipse.jdt.core.dom.NumberLiteral;
@@ -105,6 +106,7 @@ import org.sonar.java.ast.parser.BoundListTreeImpl;
 import org.sonar.java.ast.parser.FormalParametersListTreeImpl;
 import org.sonar.java.ast.parser.InitializerListTreeImpl;
 import org.sonar.java.ast.parser.JavaParser;
+import org.sonar.java.ast.parser.ModuleNameTreeImpl;
 import org.sonar.java.ast.parser.QualifiedIdentifierListTreeImpl;
 import org.sonar.java.ast.parser.ResourceListTreeImpl;
 import org.sonar.java.ast.parser.StatementExpressionListTreeImpl;
@@ -116,6 +118,7 @@ import org.sonar.java.model.declaration.EnumConstantTreeImpl;
 import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.java.model.declaration.ModifierKeywordTreeImpl;
 import org.sonar.java.model.declaration.ModifiersTreeImpl;
+import org.sonar.java.model.declaration.ModuleDeclarationTreeImpl;
 import org.sonar.java.model.declaration.VariableTreeImpl;
 import org.sonar.java.model.expression.ArrayAccessExpressionTreeImpl;
 import org.sonar.java.model.expression.AssignmentExpressionTreeImpl;
@@ -168,6 +171,7 @@ import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.ImportClauseTree;
 import org.sonar.plugins.java.api.tree.ModifierTree;
+import org.sonar.plugins.java.api.tree.ModuleDeclarationTree;
 import org.sonar.plugins.java.api.tree.PackageDeclarationTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
@@ -214,6 +218,7 @@ public class JParser {
     );
     // TODO Should be set to "module-info.java" when parsing module descriptor, otherwise
     // Syntax error on token "module", module expected
+    // and module declaration will be null
     astParser.setUnitName("Example.java");
 
     // TODO try
@@ -483,8 +488,24 @@ public class JParser {
       packageDeclaration,
       imports,
       types,
-      null,
+      convertModuleDeclaration(compilationUnit.getModule()),
       firstTokenAfter(e, TerminalTokens.TokenNameEOF)
+    );
+  }
+
+  @Nullable
+  private ModuleDeclarationTree convertModuleDeclaration(@Nullable ModuleDeclaration e) {
+    if (e == null) {
+      return null;
+    }
+    return new ModuleDeclarationTreeImpl(
+      Collections.emptyList(),
+      null,
+      firstTokenIn(e, TerminalTokens.TokenNameIdentifier), // TODO Scanner.fakeInModule for TokenNamemodule ?
+      new ModuleNameTreeImpl(Collections.emptyList(), Collections.emptyList()), // TODO convertExpression(e.getName());
+      firstTokenIn(e, TerminalTokens.TokenNameLBRACE),
+      Collections.emptyList(), // TODO e.moduleStatements()
+      lastTokenIn(e, TerminalTokens.TokenNameRBRACE)
     );
   }
 
