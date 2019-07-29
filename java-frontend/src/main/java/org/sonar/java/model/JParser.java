@@ -180,17 +180,12 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Stream;
 
 @ParametersAreNonnullByDefault
 public class JParser {
@@ -283,19 +278,6 @@ public class JParser {
     TreeFormatter.compare(tree, oldTree);
 
     return tree;
-  }
-
-  private static List<File> classpath() {
-    List<File> r = new ArrayList<>();
-    r.add(new File("target/test-classes")); // for example for PrintfMisuseCheck
-    try (Stream<Path> s = Files.list(Paths.get("target/test-jars"))) {
-      s
-        .map(p -> p.toAbsolutePath().toFile())
-        .forEach(r::add);
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
-    return r;
   }
 
   private static void collectTrivias(List<String> result, Tree node) {
