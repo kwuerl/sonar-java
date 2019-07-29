@@ -24,8 +24,11 @@ import com.google.common.base.Throwables;
 import com.google.common.collect.Iterables;
 import com.sonar.sslr.api.RecognitionException;
 import com.sonar.sslr.api.typed.ActionParser;
+
+import java.io.File;
 import java.io.InterruptedIOException;
 import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.Nullable;
 import org.sonar.api.batch.fs.InputFile;
@@ -34,6 +37,7 @@ import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.AnalysisException;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.ast.parser.JavaParser;
+import org.sonar.java.model.JParser;
 import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.java.model.VisitorsBridge;
 import org.sonar.plugins.java.api.JavaVersion;
@@ -82,11 +86,22 @@ public class JavaAstScanner {
     return sonarComponents != null && sonarComponents.analysisCancelled();
   }
 
+
+  private List<File> classpath;
+  public void setClassPath(List<File> classpath) {
+    this.classpath = classpath;
+  }
+
   private void simpleScan(InputFile inputFile) {
     visitor.setCurrentFile(inputFile);
     try {
       String fileContent = inputFile.contents();
-      Tree ast = parser.parse(fileContent);
+      final Tree ast;
+      if (!JParser.ENABLED) {
+        ast = parser.parse(fileContent);
+      } else {
+        ast = JParser.parse(fileContent, classpath);
+      }
       visitor.visitFile(ast);
     } catch (RecognitionException e) {
       checkInterrupted(e);

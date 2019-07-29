@@ -1,0 +1,128 @@
+package org.sonar.java.model;
+
+import org.junit.Test;
+import org.sonar.java.ast.parser.JavaParser;
+import org.sonar.java.bytecode.loader.SquidClassLoader;
+import org.sonar.java.resolve.SemanticModel;
+import org.sonar.plugins.java.api.tree.CompilationUnitTree;
+import org.sonar.plugins.java.api.tree.Tree;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.Collections;
+import java.util.Map;
+
+import static org.junit.Assert.assertEquals;
+
+public class JParserTest {
+
+  @Test
+  public void wip() {
+    test("class C { void m(String... s) { m(new String[] {}); /* comment */ m(new String[] {}); } }");
+    test("abstract class C { abstract int method(); }");
+    test("class C { int f; }");
+  }
+
+  /**
+   * @see org.eclipse.jdt.core.dom.InfixExpression#extendedOperands()
+   */
+  @Test
+  public void extended_operands() {
+    // TODO test parenthesises
+    test("class C { void m() { m( 1 - 2 - 3 ); } }");
+  }
+
+  /**
+   * @see org.eclipse.jdt.core.dom.MethodDeclaration#extraDimensions()
+   * @see org.eclipse.jdt.core.dom.VariableDeclarationFragment#extraDimensions()
+   * @see org.eclipse.jdt.core.dom.SingleVariableDeclaration#extraDimensions()
+   */
+  @Test
+  public void extra_dimensions() {
+    test("interface I { int m()[]; }");
+    test("interface I { int m(int p[]); }");
+    test("interface I { int f1[], f2[][]; }");
+  }
+
+  /**
+   * @see Tree.Kind#VAR_TYPE
+   */
+  @Test
+  public void type_var() {
+    test("class C { void m() { var i = 42; } }");
+  }
+
+  @Test
+  public void empty_declarations() {
+    // after each import declaration
+    test("import i; ;");
+
+    // before first and after each body declaration
+    test("class C { ; void m(); ; }");
+  }
+
+  /**
+   * @see org.eclipse.jdt.core.dom.SingleVariableDeclaration#isVarargs()
+   */
+  @Test
+  public void varargs() {
+    test("class I { void m(int... p) { m(1); } }");
+  }
+
+  @Test
+  public void statement_for() {
+    test("class C { void m() { for ( int i , j ; ; ) ; } }");
+    test("class C { void m() { for ( int i = 0, j = 0 ; ; ) ; } }");
+  }
+
+  @Test
+  public void statement_switch() {
+    test("class C { void m() { switch (0) { case 0: } } }");
+  }
+
+  @Test
+  public void statement_try() {
+    test("class C { void m() { try (R r1 = open(); r2;) { } } }");
+  }
+
+  @Test
+  public void expression_array_creation() {
+    testExpression("new int[0]");
+    testExpression("new int[0][1]");
+
+    testExpression("new int[][] { { } , { } }");
+  }
+
+  @Test
+  public void expression_type_method_reference() {
+    testExpression("java.util.Map.Entry<String, String>::getClass");
+  }
+
+  @Test
+  public void test_wip() throws IOException {
+    String s = new String(Files.readAllBytes(Paths.get("/Users/evgeny.mandrikov/projects/sonarsource/sonar-enterprise/"
+      + "server/sonar-server-common/src/main/java/org/sonar/server/es/newindex/KeywordFieldBuilder.java")));
+    JParser.parse(s);
+  }
+
+  private void testExpression(String expression) {
+    test("class C { Object m() { return " + expression + " ; } }");
+  }
+
+  private static void test(String source) {
+    TreeFormatter formatter = new TreeFormatter();
+    formatter.showTokens = true;
+
+    CompilationUnitTree oldTree = (CompilationUnitTree) JavaParser.createParser().parse(source);
+    SemanticModel.createFor(oldTree, new SquidClassLoader(Collections.emptyList()));
+    String expected = formatter.toString(oldTree);
+    System.out.println(expected);
+
+    Tree newTree = JParser.parse(source);
+    String actual = formatter.toString(newTree);
+
+    assertEquals(expected, actual);
+  }
+
+}
