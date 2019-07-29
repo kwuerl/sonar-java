@@ -211,11 +211,11 @@ public class JParser {
    */
   @Deprecated
   public static CompilationUnitTree parse(String unitName, String source, List<File> classpath) {
-    return parse("11", unitName, source, classpath);
+    return parse("12", unitName, source, classpath);
   }
 
   public static CompilationUnitTree parse(String version, String unitName, String source, List<File> classpath) {
-    ASTParser astParser = ASTParser.newParser(AST.JLS11); // TODO in JLS12 shape of tree is different
+    ASTParser astParser = ASTParser.newParser(AST.JLS12);
     Map<String, String> options = new HashMap<>();
     options.put(JavaCore.COMPILER_SOURCE, version);
     astParser.setCompilerOptions(options);
@@ -1151,7 +1151,7 @@ public class JParser {
             SwitchCase c = (SwitchCase) o;
             labels.add(new CaseLabelTreeImpl(
               firstTokenIn(c, c.isDefault() ? TerminalTokens.TokenNamedefault : TerminalTokens.TokenNamecase),
-              c.isDefault() ? Collections.emptyList() : Collections.singletonList(convertExpression(c.getExpression())), // list for Java 12
+              c.isDefault() ? Collections.emptyList() : Collections.singletonList(convertExpression((Expression) c.expressions().get(0))),
               lastTokenIn(c, TerminalTokens.TokenNameCOLON)
             ));
           } else {
