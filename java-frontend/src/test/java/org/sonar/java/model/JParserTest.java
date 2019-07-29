@@ -20,6 +20,12 @@ import static org.junit.Assert.assertEquals;
  */
 public class JParserTest {
 
+  @org.junit.Ignore("causes IndexOutOfBoundsException")
+  @Test
+  public void err() {
+    test("interface Foo { public foo(); // comment\n }");
+  }
+
   @Test
   public void wip() {
     test("class C { void m(String... s) { m(new String[] {}); /* comment */ m(new String[] {}); } }");
