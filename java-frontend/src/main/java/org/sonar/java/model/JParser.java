@@ -459,7 +459,7 @@ public class JParser {
     PackageDeclarationTree packageDeclaration = null;
     if (e.getPackage() != null) {
       packageDeclaration = new JavaTree.PackageDeclarationTreeImpl(
-        Collections.emptyList(), // TODO annotations
+        Collections.emptyList(), // FIXME annotations
         firstTokenIn(e.getPackage(), TerminalTokens.TokenNamepackage),
         convertExpression(e.getPackage().getName()),
         firstTokenIn(e.getPackage(), TerminalTokens.TokenNameSEMICOLON)
@@ -618,7 +618,7 @@ public class JParser {
         if (!superInterfaceTypes.isEmpty()) {
           QualifiedIdentifierListTreeImpl superInterfaces = new QualifiedIdentifierListTreeImpl(
             new ArrayList<>(),
-            new ArrayList<>() // TODO separators
+            new ArrayList<>() // FIXME separators
           );
           for (Object o : superInterfaceTypes) {
             superInterfaces.add(convertType((Type) o));
@@ -636,7 +636,7 @@ public class JParser {
 
   private EnumConstantTreeImpl processEnumConstantDeclaration(EnumConstantDeclaration e) {
     ArgumentListTreeImpl arguments = convertArguments(
-      null, // TODO tokens
+      null, // FIXME tokens
       e.arguments(),
       null
     );
@@ -665,7 +665,7 @@ public class JParser {
       ).completeWithIdentifier(
         identifier
       ),
-      null // TODO separatorToken
+      null // FIXME separatorToken
     );
   }
 
@@ -859,7 +859,7 @@ public class JParser {
   }
 
   private TypeParameterTree convertTypeParameter(TypeParameter e) {
-    // TODO e.modifiers()
+    // FIXME e.modifiers()
     if (e.typeBounds().isEmpty()) {
       return new TypeParameterTreeImpl(
         convertSimpleName(e.getName())
@@ -886,7 +886,7 @@ public class JParser {
       Dimension e = (Dimension) o;
       type = new JavaTree.ArrayTypeTreeImpl(
         type,
-        Collections.emptyList(), // TODO annotations
+        Collections.emptyList(), // FIXME annotations
         firstTokenIn(e, TerminalTokens.TokenNameLBRACKET),
         firstTokenIn(e, TerminalTokens.TokenNameRBRACKET)
       );
@@ -901,7 +901,7 @@ public class JParser {
     if (e.isVarargs()) {
       type = new JavaTree.ArrayTypeTreeImpl(
         type,
-        Collections.emptyList(), // TODO annotations,
+        Collections.emptyList(), // FIXME annotations,
         firstTokenAfter(e.getType(), TerminalTokens.TokenNameELLIPSIS)
       );
     }
@@ -1055,9 +1055,9 @@ public class JParser {
           firstTokenIn(e, TerminalTokens.TokenNamefor),
           firstTokenIn(e, TerminalTokens.TokenNameLPAREN),
           forInitStatement,
-          createSyntaxToken(e.getStartPosition(), ";"), // TODO
+          createSyntaxToken(e.getStartPosition(), ";"), // FIXME
           convertExpression(e.getExpression()),
-          createSyntaxToken(e.getStartPosition(), ";"), // TODO
+          createSyntaxToken(e.getStartPosition(), ";"), // FIXME
           forUpdateStatement,
           firstTokenBefore(e.getBody(), TerminalTokens.TokenNameRPAREN),
           convertStatement(e.getBody())
@@ -1309,14 +1309,14 @@ public class JParser {
         }
 
         ArgumentListTreeImpl arguments = convertArguments(
-          firstTokenIn(e, TerminalTokens.TokenNameLPAREN), // TODO first only in absence of type arguments,
+          firstTokenIn(e, TerminalTokens.TokenNameLPAREN), // FIXME first only in absence of type arguments,
           e.arguments(),
           lastTokenIn(e, TerminalTokens.TokenNameRPAREN)
         );
 
         return new ExpressionStatementTreeImpl(
           new MethodInvocationTreeImpl(
-            new IdentifierTreeImpl(firstTokenIn(e, TerminalTokens.TokenNamethis)), // TODO first only in absence of type arguments
+            new IdentifierTreeImpl(firstTokenIn(e, TerminalTokens.TokenNamethis)), // FIXME first only in absence of type arguments
             typeArguments,
             arguments
           ),
@@ -1894,7 +1894,7 @@ public class JParser {
         throw new IllegalStateException(ASTNode.nodeClassForType(node.getNodeType()).toString());
       case ASTNode.PRIMITIVE_TYPE: {
         PrimitiveType e = (PrimitiveType) node;
-        // TODO e.annotations()
+        // FIXME e.annotations()
         switch (e.getPrimitiveTypeCode().toString()) {
           default:
             throw new IllegalStateException(e.getPrimitiveTypeCode().toString());
@@ -1959,7 +1959,7 @@ public class JParser {
         for (int i = 0; i < e.dimensions().size() - 1; i++) {
           t = new JavaTree.ArrayTypeTreeImpl(
             t,
-            Collections.emptyList(), // TODO annotations
+            Collections.emptyList(), // FIXME annotations
             firstTokenAfter(e.getElementType(), TerminalTokens.TokenNameLBRACKET),
             firstTokenAfter(e.getElementType(), TerminalTokens.TokenNameRBRACKET)
           );
@@ -1980,7 +1980,7 @@ public class JParser {
       }
       case ASTNode.QUALIFIED_TYPE: {
         QualifiedType e = (QualifiedType) node;
-        // TODO e.annotations()
+        // FIXME e.annotations()
         return new MemberSelectExpressionTreeImpl(
           (ExpressionTree) convertType(e.getQualifier()),
           firstTokenAfter(e.getQualifier(), TerminalTokens.TokenNameDOT),
@@ -1994,7 +1994,7 @@ public class JParser {
 //      }
       case ASTNode.WILDCARD_TYPE: {
         WildcardType e = (WildcardType) node;
-        // TODO e.annotations()
+        // FIXME e.annotations()
         if (!e.annotations().isEmpty()) {
           throw new AssertionError();
         }
