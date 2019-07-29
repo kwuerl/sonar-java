@@ -87,7 +87,7 @@ public class JavaAstScanner {
   }
 
 
-  private List<File> classpath;
+  private List<File> classpath = Collections.emptyList();
   public void setClassPath(List<File> classpath) {
     this.classpath = classpath;
   }

@@ -202,21 +202,18 @@ public class JParser {
    */
   @Deprecated
   public static CompilationUnitTree parse(String source) {
-    return parse("Example.java", source, null);
+    return parse("Example.java", source, Collections.emptyList());
   }
 
   /**
    * @param unitName see {@link ASTParser#setUnitName(String)}
    */
-  public static CompilationUnitTree parse(String unitName, String source, @Nullable List<File> classpath) {
+  public static CompilationUnitTree parse(String unitName, String source, List<File> classpath) {
     ASTParser astParser = ASTParser.newParser(AST.JLS11); // TODO in JLS12 shape of tree is different
     Map<String, String> options = new HashMap<>();
     options.put(JavaCore.COMPILER_SOURCE, "11"); // TODO set version
     astParser.setCompilerOptions(options);
 
-    if (classpath == null) {
-      classpath = Collections.emptyList();
-    }
     astParser.setEnvironment(
       classpath.stream().map(File::getAbsolutePath).toArray(String[]::new),
       new String[]{},
