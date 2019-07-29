@@ -198,7 +198,7 @@ public class JParser {
   private static boolean COMPARE = false;
 
   /**
-   * @deprecated use {@link #parse(String, String, List)} instead
+   * @deprecated use {@link #parse(String, String, String, List)} instead
    */
   @Deprecated
   public static CompilationUnitTree parse(String source) {
@@ -207,11 +207,17 @@ public class JParser {
 
   /**
    * @param unitName see {@link ASTParser#setUnitName(String)}
+   * @deprecated use {@link #parse(String, String, String, List)} instead
    */
+  @Deprecated
   public static CompilationUnitTree parse(String unitName, String source, List<File> classpath) {
+    return parse("11", unitName, source, classpath);
+  }
+
+  public static CompilationUnitTree parse(String version, String unitName, String source, List<File> classpath) {
     ASTParser astParser = ASTParser.newParser(AST.JLS11); // TODO in JLS12 shape of tree is different
     Map<String, String> options = new HashMap<>();
-    options.put(JavaCore.COMPILER_SOURCE, "11"); // TODO set version
+    options.put(JavaCore.COMPILER_SOURCE, version);
     astParser.setCompilerOptions(options);
 
     astParser.setEnvironment(
@@ -252,7 +258,7 @@ public class JParser {
 
     JParser converter = new JParser();
     converter.compilationUnit = astNode;
-    converter.tokenManager = new TokenManager(lex(sourceChars), source, new DefaultCodeFormatterOptions(new HashMap<>()));
+    converter.tokenManager = new TokenManager(lex(version, sourceChars), source, new DefaultCodeFormatterOptions(new HashMap<>()));
 
     CompilationUnitTree tree = converter.convertCompilationUnit(astNode);
     setParents(tree);
@@ -318,13 +324,13 @@ public class JParser {
     return ((JavaTree) node).getChildren().iterator();
   }
 
-  private static List<Token> lex(char[] sourceChars) {
+  private static List<Token> lex(String version, char[] sourceChars) {
     List<Token> tokens = new ArrayList<>();
     Scanner scanner = new Scanner(
       true,
       true,
       false,
-      CompilerOptions.versionToJdkLevel("11"), // TODO set version
+      CompilerOptions.versionToJdkLevel(version),
       null,
       null,
       false
