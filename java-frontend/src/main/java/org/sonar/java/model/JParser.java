@@ -247,6 +247,7 @@ public class JParser {
       String message = "line " + problem.getSourceLineNumber() + ": " + problem.getMessage();
       System.err.println(message);
 
+      // TODO more for problem.isError()
       if (problem.getMessage().contains("Syntax error")) {
         throw new UnsupportedOperationException(message);
       }
@@ -1051,9 +1052,9 @@ public class JParser {
           firstTokenIn(e, TerminalTokens.TokenNamefor),
           firstTokenIn(e, TerminalTokens.TokenNameLPAREN),
           forInitStatement,
-          createSyntaxToken(e.getStartPosition(), ";"),
+          createSyntaxToken(e.getStartPosition(), ";"), // TODO
           convertExpression(e.getExpression()),
-          createSyntaxToken(e.getStartPosition(), ";"),
+          createSyntaxToken(e.getStartPosition(), ";"), // TODO
           forUpdateStatement,
           firstTokenBefore(e.getBody(), TerminalTokens.TokenNameRPAREN),
           convertStatement(e.getBody())
