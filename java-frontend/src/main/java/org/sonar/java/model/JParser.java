@@ -219,7 +219,7 @@ public class JParser {
     // TODO try
 //    astParser.setStatementsRecovery(true);
 
-    astParser.setResolveBindings(true);
+    astParser.setResolveBindings(false);
     astParser.setBindingsRecovery(true);
 
     char[] sourceChars = source.toCharArray();
@@ -1757,19 +1757,34 @@ public class JParser {
       }
       case ASTNode.NUMBER_LITERAL: {
         NumberLiteral e = (NumberLiteral) node;
-        // TODO depends on bindings
-        switch (e.resolveTypeBinding().getName()) {
+        int tokenIndex = tokenManager.findIndex(e.getStartPosition(), -1, true);
+        int tokenType = tokenManager.get(tokenIndex).tokenType;
+        boolean unaryMinus = tokenType == TerminalTokens.TokenNameMINUS;
+        if (unaryMinus) {
+          tokenIndex++;
+          tokenType = tokenManager.get(tokenIndex).tokenType;
+        }
+        ExpressionTree result;
+        switch (tokenType) {
           default:
             throw new IllegalStateException();
-          case "int":
-            return new LiteralTreeImpl(Tree.Kind.INT_LITERAL, firstTokenIn(e, TerminalTokens.TokenNameIntegerLiteral));
-          case "long":
-            return new LiteralTreeImpl(Tree.Kind.LONG_LITERAL, firstTokenIn(e, TerminalTokens.TokenNameLongLiteral));
-          case "float":
-            return new LiteralTreeImpl(Tree.Kind.FLOAT_LITERAL, firstTokenIn(e, TerminalTokens.TokenNameFloatingPointLiteral));
-          case "double":
-            return new LiteralTreeImpl(Tree.Kind.DOUBLE_LITERAL, firstTokenIn(e, TerminalTokens.TokenNameDoubleLiteral));
+          case TerminalTokens.TokenNameIntegerLiteral:
+            result = new LiteralTreeImpl(Tree.Kind.INT_LITERAL, createSyntaxToken(tokenIndex));
+            break;
+          case TerminalTokens.TokenNameLongLiteral:
+            result = new LiteralTreeImpl(Tree.Kind.LONG_LITERAL, createSyntaxToken(tokenIndex));
+            break;
+          case TerminalTokens.TokenNameFloatingPointLiteral:
+            result = new LiteralTreeImpl(Tree.Kind.FLOAT_LITERAL, createSyntaxToken(tokenIndex));
+            break;
+          case TerminalTokens.TokenNameDoubleLiteral:
+            result = new LiteralTreeImpl(Tree.Kind.DOUBLE_LITERAL, createSyntaxToken(tokenIndex));
+            break;
         }
+        if (unaryMinus) {
+          result = new InternalPrefixUnaryExpression(Tree.Kind.UNARY_MINUS, createSyntaxToken(tokenIndex - 1), result);
+        }
+        return result;
       }
       case ASTNode.CHARACTER_LITERAL: {
         CharacterLiteral e = (CharacterLiteral) node;

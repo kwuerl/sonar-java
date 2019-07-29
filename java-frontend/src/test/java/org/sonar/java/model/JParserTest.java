@@ -87,6 +87,12 @@ public class JParserTest {
   }
 
   @Test
+  public void expression_literal() {
+    testExpression("-2147483648"); // Integer.MIN_VALUE
+    testExpression("-9223372036854775808L"); // Long.MIN_VALUE
+  }
+
+  @Test
   public void expression_array_creation() {
     testExpression("new int[0]");
     testExpression("new int[0][1]");
