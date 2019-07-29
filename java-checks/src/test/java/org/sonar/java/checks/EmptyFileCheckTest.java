@@ -42,7 +42,7 @@ public class EmptyFileCheckTest {
   @org.junit.Ignore("module")
   @Test
   public void with_module() {
-    JavaCheckVerifier.verifyNoIssue("src/test/files/checks/WithModule.java", new EmptyFileCheck());
+    JavaCheckVerifier.verifyNoIssue("src/test/files/checks/module-info.java", new EmptyFileCheck());
   }
 
   @Test
