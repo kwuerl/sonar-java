@@ -41,7 +41,6 @@ public class UselessImportCheckTest {
     JavaCheckVerifier.verify("src/test/files/checks/UselessImportCheck/WithoutPackage.java", new UselessImportCheck());
   }
 
-  @org.junit.Ignore("module")
   @Test
   public void with_module() {
     JavaCheckVerifier.verifyNoIssue("src/test/files/checks/module-info.java", new UselessImportCheck());

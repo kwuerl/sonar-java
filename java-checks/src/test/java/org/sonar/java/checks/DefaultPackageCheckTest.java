@@ -34,7 +34,6 @@ public class DefaultPackageCheckTest {
     JavaCheckVerifier.verifyNoIssue("src/test/files/checks/WithPackage.java", new DefaultPackageCheck());
   }
 
-  @org.junit.Ignore("module")
   @Test
   public void with_module() {
     JavaCheckVerifier.verifyNoIssue("src/test/files/checks/module-info.java", new DefaultPackageCheck());

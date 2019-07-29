@@ -198,14 +198,17 @@ public class JParser {
   private static boolean COMPARE = false;
 
   /**
-   * @deprecated use {@link #parse(String, List)} instead
+   * @deprecated use {@link #parse(String, String, List)} instead
    */
   @Deprecated
   public static CompilationUnitTree parse(String source) {
-    return parse(source, null);
+    return parse("Example.java", source, null);
   }
 
-  public static CompilationUnitTree parse(String source, @Nullable List<File> classpath) {
+  /**
+   * @param unitName see {@link ASTParser#setUnitName(String)}
+   */
+  public static CompilationUnitTree parse(String unitName, String source, @Nullable List<File> classpath) {
     ASTParser astParser = ASTParser.newParser(AST.JLS11); // TODO in JLS12 shape of tree is different
     Map<String, String> options = new HashMap<>();
     options.put(JavaCore.COMPILER_SOURCE, "11"); // TODO set version
@@ -223,7 +226,7 @@ public class JParser {
     // TODO Should be set to "module-info.java" when parsing module descriptor, otherwise
     // Syntax error on token "module", module expected
     // and module declaration will be null
-    astParser.setUnitName("Example.java");
+    astParser.setUnitName(unitName);
 
     // TODO try
 //    astParser.setStatementsRecovery(true);

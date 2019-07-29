@@ -100,7 +100,7 @@ public class JavaAstScanner {
       if (!JParser.ENABLED) {
         ast = parser.parse(fileContent);
       } else {
-        ast = JParser.parse(fileContent, classpath);
+        ast = JParser.parse(inputFile.filename(), fileContent, classpath);
       }
       visitor.visitFile(ast);
     } catch (RecognitionException e) {

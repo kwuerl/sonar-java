@@ -24,7 +24,6 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class UselessParenthesesCheckTest {
 
-  @org.junit.Ignore("line 32: Syntax error on token \";\", invalid AssignmentOperator")
   @Test
   public void test() {
     JavaCheckVerifier.verify("src/test/files/checks/UselessParenthesesCheck.java", new UselessParenthesesCheck());
