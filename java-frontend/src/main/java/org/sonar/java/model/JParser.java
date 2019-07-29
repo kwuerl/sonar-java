@@ -197,6 +197,10 @@ public class JParser {
   public static boolean ENABLED = true;
   private static boolean COMPARE = false;
 
+  /**
+   * @deprecated use {@link #parse(String, List)} instead
+   */
+  @Deprecated
   public static CompilationUnitTree parse(String source) {
     return parse(source, null);
   }
@@ -204,7 +208,7 @@ public class JParser {
   public static CompilationUnitTree parse(String source, @Nullable List<File> classpath) {
     ASTParser astParser = ASTParser.newParser(AST.JLS11); // TODO in JLS12 shape of tree is different
     Map<String, String> options = new HashMap<>();
-    options.put(JavaCore.COMPILER_SOURCE, "11");
+    options.put(JavaCore.COMPILER_SOURCE, "11"); // TODO set version
     astParser.setCompilerOptions(options);
 
     if (classpath == null) {
@@ -319,7 +323,7 @@ public class JParser {
       true,
       true,
       false,
-      CompilerOptions.versionToJdkLevel("11"),
+      CompilerOptions.versionToJdkLevel("11"), // TODO set version
       null,
       null,
       false
