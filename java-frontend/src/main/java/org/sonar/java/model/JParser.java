@@ -201,8 +201,8 @@ public class JParser {
    * @deprecated use {@link #parse(String, String, String, List)} instead
    */
   @Deprecated
-  public static CompilationUnitTree parse(String source) {
-    return parse("Example.java", source, Collections.emptyList());
+  static CompilationUnitTree parse(String source) {
+    return parse("Fake.java", source, Collections.emptyList());
   }
 
   /**
@@ -2068,7 +2068,7 @@ public class JParser {
 
   private static final Map<Object, Op> operators = new HashMap<>();
 
-  static class Op {
+  private static class Op {
     final Tree.Kind kind;
 
     /**
