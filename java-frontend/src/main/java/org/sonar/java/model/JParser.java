@@ -207,7 +207,6 @@ public class JParser {
   }
 
   /**
-   * @param unitName see {@link ASTParser#setUnitName(String)}
    * @deprecated use {@link #parse(String, String, String, List)} instead
    */
   @Deprecated
@@ -215,6 +214,9 @@ public class JParser {
     return parse("12", unitName, source, classpath);
   }
 
+  /**
+   * @param unitName see {@link ASTParser#setUnitName(String)}
+   */
   public static CompilationUnitTree parse(String version, String unitName, String source, List<File> classpath) {
     ASTParser astParser = ASTParser.newParser(AST.JLS12);
     Map<String, String> options = new HashMap<>();

@@ -17,7 +17,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 /**
- * TODO shared identifiers in enum
+ * TODO test shared identifiers in enum
  */
 public class JParserTest {
 
@@ -32,17 +32,17 @@ public class JParserTest {
     testExpression("m()++");
   }
 
-  @org.junit.Ignore("causes IndexOutOfBoundsException")
   @Test
   public void err() {
-    // ASTNode.METHOD_DECLARATION with flag ASTNode.MALFORMED
-    test("interface Foo { public foo(); // comment\n }");
-  }
-
-  @Test()
-  public void err2() {
-    // TODO without check for syntax errors will cause IndexOutOfBoundsException
     try {
+      // ASTNode.METHOD_DECLARATION with flag ASTNode.MALFORMED
+      test("interface Foo { public foo(); // comment\n }");
+      fail("exception expected");
+    } catch (IndexOutOfBoundsException ignore) {
+    }
+
+    try {
+      // TODO without check for syntax errors will cause IndexOutOfBoundsException
       JParser.parse("class C");
       fail("exception expected");
     } catch (UnsupportedOperationException e) {
@@ -176,13 +176,6 @@ public class JParserTest {
   @Test(expected = IllegalStateException.class)
   public void type_name_qualified() {
     testExpression("new a. @Annotation d()");
-  }
-
-  @Test
-  public void test_wip() throws IOException {
-    String s = new String(Files.readAllBytes(Paths.get("/Users/evgeny.mandrikov/projects/sonarsource/sonar-enterprise/"
-      + "server/sonar-server-common/src/main/java/org/sonar/server/es/newindex/KeywordFieldBuilder.java")));
-    JParser.parse(s);
   }
 
   private void testExpression(String expression) {
