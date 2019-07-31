@@ -55,6 +55,7 @@ import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.Modifier;
 import org.eclipse.jdt.core.dom.ModuleDeclaration;
+import org.eclipse.jdt.core.dom.NameQualifiedType;
 import org.eclipse.jdt.core.dom.NormalAnnotation;
 import org.eclipse.jdt.core.dom.NullLiteral;
 import org.eclipse.jdt.core.dom.NumberLiteral;
@@ -2028,10 +2029,18 @@ public class JParser {
           )
         );
       }
-//      case ASTNode.NAME_QUALIFIED_TYPE: {
-//        NameQualifiedType e = (NameQualifiedType) node;
-//        throw new IllegalStateException();
-//      }
+      case ASTNode.NAME_QUALIFIED_TYPE: {
+        NameQualifiedType e = (NameQualifiedType) node;
+        MemberSelectExpressionTreeImpl t = new MemberSelectExpressionTreeImpl(
+          convertExpression(e.getQualifier()),
+          firstTokenAfter(e.getQualifier(), TerminalTokens.TokenNameDOT),
+          convertSimpleName(e.getName())
+        );
+        ((IdentifierTreeImpl) t.identifier()).complete(
+          convertAnnotations(e.annotations())
+        );
+        return t;
+      }
       case ASTNode.WILDCARD_TYPE: {
         WildcardType e = (WildcardType) node;
         // FIXME e.annotations()
@@ -2053,6 +2062,16 @@ public class JParser {
         }
       }
     }
+  }
+
+  private List<AnnotationTree> convertAnnotations(List e) {
+    List<AnnotationTree> annotations = new ArrayList<>();
+    for (Object o : e) {
+      annotations.add((AnnotationTree) convertExpression(
+        ((Annotation) o)
+      ));
+    }
+    return annotations;
   }
 
   private ModifiersTreeImpl convertModifiers(List source) {

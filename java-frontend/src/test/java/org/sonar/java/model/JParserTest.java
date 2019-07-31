@@ -172,8 +172,7 @@ public class JParserTest {
     testExpression("C.super::<T, T>m");
   }
 
-  // FIXME
-  @Test(expected = IllegalStateException.class)
+  @Test
   public void type_name_qualified() {
     testExpression("new a. @Annotation d()");
   }
