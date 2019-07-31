@@ -19,6 +19,17 @@ import static org.junit.Assert.assertEquals;
  */
 public class JParserTest {
 
+  @org.junit.Ignore
+  @Test
+  public void invalid() {
+    // TODO in CompareToResultTestCheckTest
+    testExpression("(c++)++");
+    // TODO in ForLoopIncrementSignCheckTest
+    testExpression("(-i)++");
+    // TODO in SystemExitCalledCheckTest
+    testExpression("m()++");
+  }
+
   @org.junit.Ignore("causes IndexOutOfBoundsException")
   @Test
   public void err() {
