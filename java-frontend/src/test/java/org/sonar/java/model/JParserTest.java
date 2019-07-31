@@ -13,6 +13,7 @@ import java.nio.file.Paths;
 import java.util.Collections;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 /**
  * TODO shared identifiers in enum
@@ -33,7 +34,19 @@ public class JParserTest {
   @org.junit.Ignore("causes IndexOutOfBoundsException")
   @Test
   public void err() {
+    // ASTNode.METHOD_DECLARATION with flag ASTNode.MALFORMED
     test("interface Foo { public foo(); // comment\n }");
+  }
+
+  @Test()
+  public void err2() {
+    // TODO without check for syntax errors will cause IndexOutOfBoundsException
+    try {
+      JParser.parse("class C");
+      fail("exception expected");
+    } catch (UnsupportedOperationException e) {
+      assertEquals("line 1: Syntax error, insert \"ClassBody\" to complete CompilationUnit", e.getMessage());
+    }
   }
 
   @Test
@@ -48,8 +61,11 @@ public class JParserTest {
    */
   @Test
   public void extended_operands() {
-    // TODO test parenthesises
     test("class C { void m() { m( 1 - 2 - 3 ); } }");
+
+    // TODO no extendedOperands in case of parenthesises ?
+    test("class C { void m() { m( (1 - 2) - 3 ); } }");
+    test("class C { void m() { m( 1 - (2 - 3) ); } }");
   }
 
   /**
@@ -76,6 +92,14 @@ public class JParserTest {
   public void empty_declarations() {
     // after each import declaration
     test("import i; ;");
+
+    try {
+      test("import a; ; import b;");
+      fail("exception expected");
+    } catch (UnsupportedOperationException e) {
+      // TODO syntax tree is actually correct even in presence of syntax error
+      assertEquals("line 1: Syntax error on token \";\", delete this token", e.getMessage());
+    }
 
     // before first and after each body declaration
     test("class C { ; void m(); ; }");
