@@ -1179,7 +1179,9 @@ public class JParser {
             SwitchCase c = (SwitchCase) o;
             labels.add(new CaseLabelTreeImpl(
               firstTokenIn(c, c.isDefault() ? TerminalTokens.TokenNamedefault : TerminalTokens.TokenNamecase),
+              // TODO multiple expressions
               c.isDefault() ? Collections.emptyList() : Collections.singletonList(convertExpression((Expression) c.expressions().get(0))),
+              // TODO can be "->" TerminalTokens.TokenNameARROW
               lastTokenIn(c, TerminalTokens.TokenNameCOLON)
             ));
           } else {

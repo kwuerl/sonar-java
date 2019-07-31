@@ -1,5 +1,6 @@
 package org.sonar.java.model;
 
+import org.junit.ComparisonFailure;
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.bytecode.loader.SquidClassLoader;
@@ -128,6 +129,18 @@ public class JParserTest {
   @Test
   public void statement_switch() {
     test("class C { void m() { switch (0) { case 0: } } }");
+
+    // Java 12
+    try {
+      test("class C { void m() { switch (0) { case 0, 1: } } }");
+      fail("expected exception");
+    } catch (ComparisonFailure ignore) {
+    }
+    try {
+      test("class C { void m() { switch (0) { case 0, 1 -> { break; } } } }");
+      fail("expected exception");
+    } catch (IndexOutOfBoundsException ignore) {
+    }
   }
 
   @Test
