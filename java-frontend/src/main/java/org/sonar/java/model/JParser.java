@@ -529,12 +529,22 @@ public class JParser {
       }
     }
 
-    // FIXME for enums
-//    final int leftBraceTokenIndex =
-//      e.bodyDeclarations().isEmpty() ?
-//        tokenManager.lastIndexIn(e, TerminalTokens.TokenNameLBRACE)
-//        : tokenManager.firstIndexBefore((ASTNode) e.bodyDeclarations().get(0), TerminalTokens.TokenNameLBRACE);
-    final int leftBraceTokenIndex = tokenManager.firstIndexAfter(e.getName(), TerminalTokens.TokenNameLBRACE);
+    // TODO try to simplify, note that type annotations can contain LBRACE
+    final int leftBraceTokenIndex;
+    if (e.getNodeType() == ASTNode.ENUM_DECLARATION) {
+      EnumDeclaration enumDeclaration = (EnumDeclaration) e;
+      if (!enumDeclaration.enumConstants().isEmpty()) {
+        leftBraceTokenIndex = tokenManager.firstIndexBefore((ASTNode) enumDeclaration.enumConstants().get(0), TerminalTokens.TokenNameLBRACE);
+      } else if (!enumDeclaration.bodyDeclarations().isEmpty()) {
+        leftBraceTokenIndex = tokenManager.firstIndexBefore((ASTNode) e.bodyDeclarations().get(0), TerminalTokens.TokenNameLBRACE);
+      } else {
+        leftBraceTokenIndex = tokenManager.lastIndexIn(e, TerminalTokens.TokenNameLBRACE);
+      }
+    } else if (!e.bodyDeclarations().isEmpty()) {
+      leftBraceTokenIndex = tokenManager.firstIndexBefore((ASTNode) e.bodyDeclarations().get(0), TerminalTokens.TokenNameLBRACE);
+    } else {
+      leftBraceTokenIndex = tokenManager.lastIndexIn(e, TerminalTokens.TokenNameLBRACE);
+    }
     addEmptyDeclarationsToList(leftBraceTokenIndex, members);
     for (Object o : e.bodyDeclarations()) {
       processBodyDeclaration((BodyDeclaration) o, members);
@@ -941,7 +951,7 @@ public class JParser {
     VariableTreeImpl t = new VariableTreeImpl(
       convertSimpleName(fragment.getName())
     ).completeType(
-      // FIXME type should be shared
+      // FIXME type should be shared between all fragments
       applyExtraDimensions(convertType(declaration.getType()), fragment.extraDimensions())
     );
     if (fragment.getInitializer() != null) {
@@ -1815,7 +1825,7 @@ public class JParser {
       }
       case ASTNode.NUMBER_LITERAL: {
         NumberLiteral e = (NumberLiteral) node;
-        int tokenIndex = tokenManager.findIndex(e.getStartPosition(), -1, true);
+        int tokenIndex = tokenManager.findIndex(e.getStartPosition(), /* any */ -1, true);
         int tokenType = tokenManager.get(tokenIndex).tokenType;
         boolean unaryMinus = tokenType == TerminalTokens.TokenNameMINUS;
         if (unaryMinus) {
