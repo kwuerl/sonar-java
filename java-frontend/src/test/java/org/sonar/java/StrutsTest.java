@@ -40,6 +40,7 @@ public class StrutsTest extends MeasurerTester {
     return SOURCE_DIR;
   }
 
+  @org.junit.Ignore
   @Test
   public void measures_on_project() throws Exception {
     Map<String, Double> metrics = getMetrics();
