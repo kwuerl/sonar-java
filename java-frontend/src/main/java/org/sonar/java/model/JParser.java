@@ -656,6 +656,23 @@ public class JParser {
       );
     }
 
+    int separatorTokenIndex = tokenManager.firstIndexAfter(e, /* any */ -1);
+    while (isWhitespaceOrComment(tokenManager.get(separatorTokenIndex))) {
+      separatorTokenIndex++;
+    }
+    final InternalSyntaxToken separatorToken;
+    switch (tokenManager.get(separatorTokenIndex).tokenType) {
+      default:
+        throw new IllegalStateException();
+      case TerminalTokens.TokenNameCOMMA:
+      case TerminalTokens.TokenNameSEMICOLON:
+        separatorToken = createSyntaxToken(separatorTokenIndex);
+        break;
+      case TerminalTokens.TokenNameRBRACE:
+        separatorToken = null;
+        break;
+    }
+
     IdentifierTree identifier = convertSimpleName(e.getName());
     return new EnumConstantTreeImpl(
       convertModifiers(e.modifiers()),
@@ -666,7 +683,7 @@ public class JParser {
       ).completeWithIdentifier(
         identifier
       ),
-      null // FIXME separatorToken
+      separatorToken
     );
   }
 

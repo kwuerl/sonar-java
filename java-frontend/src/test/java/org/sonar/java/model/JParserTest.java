@@ -90,6 +90,12 @@ public class JParserTest {
   }
 
   @Test
+  public void declaration_enum() {
+    test("enum E { C1 , C2 }");
+    test("enum E { C1 , C2 ; }");
+  }
+
+  @Test
   public void statement_for() {
     test("class C { void m() { for ( int i , j ; ; ) ; } }");
     test("class C { void m() { for ( int i = 0, j = 0 ; ; ) ; } }");
