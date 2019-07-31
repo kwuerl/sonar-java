@@ -11,7 +11,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Collections;
-import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 
@@ -112,6 +111,11 @@ public class JParserTest {
   @Test
   public void expression_type_method_reference() {
     testExpression("java.util.Map.Entry<String, String>::getClass");
+  }
+
+  @Test
+  public void expression_super_method_reference() {
+    testExpression("C.super::<T, T>m");
   }
 
   @Test

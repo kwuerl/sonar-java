@@ -75,6 +75,7 @@ import org.eclipse.jdt.core.dom.StringLiteral;
 import org.eclipse.jdt.core.dom.SuperConstructorInvocation;
 import org.eclipse.jdt.core.dom.SuperFieldAccess;
 import org.eclipse.jdt.core.dom.SuperMethodInvocation;
+import org.eclipse.jdt.core.dom.SuperMethodReference;
 import org.eclipse.jdt.core.dom.SwitchCase;
 import org.eclipse.jdt.core.dom.SwitchStatement;
 import org.eclipse.jdt.core.dom.SynchronizedStatement;
@@ -1772,15 +1773,22 @@ public class JParser {
         );
         return t;
       }
-//      case ASTNode.SUPER_METHOD_REFERENCE: {
-//        SuperMethodReference e = (SuperMethodReference) node;
-//        EMethodReference t = new EMethodReference();
-//        t.expression = convertExpression(e.getQualifier());
-//        // TODO e.typeArguments()
-//        t.method = convertSimpleName(e.getName());
-//        ast.usage(t.method.binding, t.method);
-//        return t;
-//      }
+      case ASTNode.SUPER_METHOD_REFERENCE: {
+        SuperMethodReference e = (SuperMethodReference) node;
+        MethodReferenceTreeImpl t = new MethodReferenceTreeImpl(
+          new MemberSelectExpressionTreeImpl(
+            convertExpression(e.getQualifier()),
+            firstTokenAfter(e.getQualifier(), TerminalTokens.TokenNameDOT),
+            new IdentifierTreeImpl(firstTokenAfter(e.getQualifier(), TerminalTokens.TokenNamesuper))
+          ),
+          firstTokenAfter(e.getQualifier(), TerminalTokens.TokenNameCOLON_COLON)
+        );
+        t.complete(
+          convertTypeArguments(e.typeArguments()),
+          convertSimpleName(e.getName())
+        );
+        return t;
+      }
       case ASTNode.NULL_LITERAL: {
         NullLiteral e = (NullLiteral) node;
         return new LiteralTreeImpl(
