@@ -129,6 +129,12 @@ public class JParserTest {
     testExpression("C.super::<T, T>m");
   }
 
+  // FIXME
+  @Test(expected = IllegalStateException.class)
+  public void type_name_qualified() {
+    testExpression("new a. @Annotation d()");
+  }
+
   @Test
   public void test_wip() throws IOException {
     String s = new String(Files.readAllBytes(Paths.get("/Users/evgeny.mandrikov/projects/sonarsource/sonar-enterprise/"

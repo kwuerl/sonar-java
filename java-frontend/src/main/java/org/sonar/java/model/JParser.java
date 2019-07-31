@@ -1999,6 +1999,7 @@ public class JParser {
       }
 //      case ASTNode.NAME_QUALIFIED_TYPE: {
 //        NameQualifiedType e = (NameQualifiedType) node;
+//        throw new IllegalStateException();
 //      }
       case ASTNode.WILDCARD_TYPE: {
         WildcardType e = (WildcardType) node;
