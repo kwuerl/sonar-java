@@ -134,6 +134,11 @@ public class JParserTest {
   }
 
   @Test
+  public void declaration_package() {
+    test("@Annotation package org.example;");
+  }
+
+  @Test
   public void declaration_enum() {
     test("enum E { C1 , C2 }");
     test("enum E { C1 , C2 ; }");

@@ -482,7 +482,7 @@ public class JParser {
     PackageDeclarationTree packageDeclaration = null;
     if (e.getPackage() != null) {
       packageDeclaration = new JavaTree.PackageDeclarationTreeImpl(
-        Collections.emptyList(), // FIXME annotations
+        convertAnnotations(e.getPackage().annotations()),
         firstTokenIn(e.getPackage(), TerminalTokens.TokenNamepackage),
         convertExpression(e.getPackage().getName()),
         firstTokenIn(e.getPackage(), TerminalTokens.TokenNameSEMICOLON)
