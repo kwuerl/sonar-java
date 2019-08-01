@@ -215,8 +215,18 @@ import java.util.Map;
 @ParametersAreNonnullByDefault
 public class JParser {
 
-  public static boolean ENABLED = true;
-  private static boolean COMPARE = false;
+  public static boolean ENABLED = Boolean.getBoolean("sonar.java.internal.ecj");
+  private static boolean COMPARE_COMMENTS = Boolean.getBoolean("sonar.java.internal.ecj.compare_comments");
+  private static boolean COMPARE_TREES = Boolean.getBoolean("sonar.java.internal.ecj.compare_trees");
+
+  static {
+    if (ENABLED) {
+      System.err.println("Using ECJ parser"
+        + (COMPARE_COMMENTS ? " (compare comments)" : "")
+        + (COMPARE_TREES ? " (compare trees)" : "")
+      );
+    }
+  }
 
   /**
    * @deprecated use {@link #parse(String, String, String, List)} instead
@@ -287,34 +297,36 @@ public class JParser {
     setParents(tree);
 
     // TODO remove debug
-    if (!COMPARE) {
-      return tree;
-    }
 
     tree.accept(new BaseTreeVisitor());
 
-    List<String> trivias = new ArrayList<>();
-    collectTrivias(trivias, tree);
-    List<String> comments = new ArrayList<>();
-    for (Object o : converter.compilationUnit.getCommentList()) {
-      Comment c = (Comment) o;
-      comments.add(
-        converter.compilationUnit.getLineNumber(c.getStartPosition())
-          + ":"
-          + converter.tokenManager.getSource().substring(c.getStartPosition(), c.getStartPosition() + c.getLength())
-      );
-    }
-    if (trivias.size() != comments.size()) {
-      System.err.println("Incorrect number of trivias:");
-      System.err.println(trivias);
-      System.err.println(comments);
+    if (COMPARE_COMMENTS) {
+      List<String> trivias = new ArrayList<>();
+      collectTrivias(trivias, tree);
+      List<String> comments = new ArrayList<>();
+      for (Object o : converter.compilationUnit.getCommentList()) {
+        Comment c = (Comment) o;
+        comments.add(
+          converter.compilationUnit.getLineNumber(c.getStartPosition())
+            + ":"
+            + converter.tokenManager.getSource().substring(c.getStartPosition(), c.getStartPosition() + c.getLength())
+        );
+      }
+      if (trivias.size() != comments.size()) {
+        System.err.println("Incorrect number of trivias:");
+        System.err.println(trivias);
+        System.err.println(comments);
 
-      comments.removeAll(trivias);
-      System.err.println(comments);
+        comments.removeAll(trivias);
+        System.err.println(comments);
+        throw new IllegalStateException();
+      }
     }
 
-    CompilationUnitTree oldTree = (CompilationUnitTree) JavaParser.createParser().parse(source);
-    TreeFormatter.compare(tree, oldTree);
+    if (COMPARE_TREES) {
+      CompilationUnitTree oldTree = (CompilationUnitTree) JavaParser.createParser().parse(source);
+      TreeFormatter.compare(tree, oldTree);
+    }
 
     return tree;
   }
