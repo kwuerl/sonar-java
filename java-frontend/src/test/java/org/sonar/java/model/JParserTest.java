@@ -198,6 +198,11 @@ public class JParserTest {
   }
 
   @Test
+  public void wip_comments() {
+    testExpression("new QualifiedIdentifierListTreeImpl(a, b() /**/ )");
+  }
+
+  @Test
   public void type_name_qualified() {
     testExpression("new a. @Annotation d()");
   }

@@ -1623,7 +1623,7 @@ public class JParser {
         ArgumentListTreeImpl arguments = convertArguments(
           firstTokenAfter(e.getType(), TerminalTokens.TokenNameLPAREN),
           e.arguments(),
-          firstTokenAfter(e.arguments().isEmpty() ? e.getType() : (ASTNode) e.arguments().get(0), TerminalTokens.TokenNameRPAREN)
+          firstTokenAfter(e.arguments().isEmpty() ? e.getType() : (ASTNode) e.arguments().get(/* FIXME */ 0), TerminalTokens.TokenNameRPAREN)
         );
 
         ClassTreeImpl classBody = null;
