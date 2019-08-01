@@ -194,6 +194,7 @@ public class JParserTest {
   @Test
   public void expression_super_method_reference() {
     testExpression("C.super::<T, T>m");
+    testExpression("super::m");
   }
 
   @Test

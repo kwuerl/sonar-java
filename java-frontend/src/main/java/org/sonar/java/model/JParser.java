@@ -1826,14 +1826,22 @@ public class JParser {
       }
       case ASTNode.SUPER_METHOD_REFERENCE: {
         SuperMethodReference e = (SuperMethodReference) node;
-        MethodReferenceTreeImpl t = new MethodReferenceTreeImpl(
-          new MemberSelectExpressionTreeImpl(
-            convertExpression(e.getQualifier()),
-            firstTokenAfter(e.getQualifier(), TerminalTokens.TokenNameDOT),
-            new IdentifierTreeImpl(firstTokenAfter(e.getQualifier(), TerminalTokens.TokenNamesuper))
-          ),
-          firstTokenAfter(e.getQualifier(), TerminalTokens.TokenNameCOLON_COLON)
-        );
+        MethodReferenceTreeImpl t;
+        if (e.getQualifier() != null) {
+          t = new MethodReferenceTreeImpl(
+            new MemberSelectExpressionTreeImpl(
+              convertExpression(e.getQualifier()),
+              firstTokenAfter(e.getQualifier(), TerminalTokens.TokenNameDOT),
+              new IdentifierTreeImpl(firstTokenAfter(e.getQualifier(), TerminalTokens.TokenNamesuper))
+            ),
+            firstTokenAfter(e.getQualifier(), TerminalTokens.TokenNameCOLON_COLON)
+          );
+        } else {
+          t = new MethodReferenceTreeImpl(
+            new IdentifierTreeImpl(firstTokenIn(e, TerminalTokens.TokenNamesuper)),
+            firstTokenIn(e, TerminalTokens.TokenNameCOLON_COLON)
+          );
+        }
         t.complete(
           convertTypeArguments(e.typeArguments()),
           convertSimpleName(e.getName())
