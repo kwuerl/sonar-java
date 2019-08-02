@@ -213,6 +213,11 @@ public class JParserTest {
   }
 
   @Test
+  public void type_qualified() {
+    testExpression("new a<b>. @Annotation c()");
+  }
+
+  @Test
   public void type_name_qualified() {
     testExpression("new a. @Annotation d()");
   }

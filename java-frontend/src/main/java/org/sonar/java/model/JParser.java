@@ -2055,14 +2055,15 @@ public class JParser {
       }
       case ASTNode.QUALIFIED_TYPE: {
         QualifiedType e = (QualifiedType) node;
-        // FIXME e.annotations()
-        return new MemberSelectExpressionTreeImpl(
+        MemberSelectExpressionTreeImpl t = new MemberSelectExpressionTreeImpl(
           (ExpressionTree) convertType(e.getQualifier()),
           firstTokenAfter(e.getQualifier(), TerminalTokens.TokenNameDOT),
-          convertSimpleName(
-            e.getName()
-          )
+          convertSimpleName(e.getName())
         );
+        ((IdentifierTreeImpl) t.identifier()).complete(
+          convertAnnotations(e.annotations())
+        );
+        return t;
       }
       case ASTNode.NAME_QUALIFIED_TYPE: {
         NameQualifiedType e = (NameQualifiedType) node;
