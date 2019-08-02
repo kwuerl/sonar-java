@@ -213,6 +213,11 @@ public class JParserTest {
   }
 
   @Test
+  public void expression_creation_reference() {
+    testExpression("C<T, T>::new");
+  }
+
+  @Test
   public void type_qualified() {
     testExpression("new a<b>. @Annotation c()");
   }

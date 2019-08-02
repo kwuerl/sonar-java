@@ -1797,7 +1797,6 @@ public class JParser {
       }
       case ASTNode.CREATION_REFERENCE: {
         CreationReference e = (CreationReference) node;
-        // TODO unsure
         MethodReferenceTreeImpl t = new MethodReferenceTreeImpl(
           convertType(e.getType()),
           lastTokenIn(e, TerminalTokens.TokenNameCOLON_COLON)
