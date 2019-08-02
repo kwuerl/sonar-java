@@ -1057,7 +1057,7 @@ public class JParser {
         );
         if (fragment.getInitializer() != null) {
           t.completeTypeAndInitializer(
-            tType,
+            t.type(),
             firstTokenAfter(fragment.getName(), TerminalTokens.TokenNameEQUAL),
             convertExpression(fragment.getInitializer())
           );
