@@ -216,12 +216,18 @@ import java.util.Map;
 public class JParser {
 
   public static boolean ENABLED = Boolean.getBoolean("sonar.java.internal.ecj");
+  /**
+   * @deprecated should be removed
+   */
+  @Deprecated
+  private static boolean ASSERTIONS = Boolean.getBoolean("sonar.java.internal.ecj.assertions");
   private static boolean COMPARE_COMMENTS = Boolean.getBoolean("sonar.java.internal.ecj.compare_comments");
   private static boolean COMPARE_TREES = Boolean.getBoolean("sonar.java.internal.ecj.compare_trees");
 
   static {
     if (ENABLED) {
       System.err.println("Using ECJ parser"
+        + (ASSERTIONS ? " (assertions)" : "")
         + (COMPARE_COMMENTS ? " (compare comments)" : "")
         + (COMPARE_TREES ? " (compare trees)" : "")
       );
@@ -922,6 +928,9 @@ public class JParser {
 
   private TypeParameterTree convertTypeParameter(TypeParameter e) {
     // FIXME e.modifiers()
+    if (ASSERTIONS && !e.modifiers().isEmpty()) {
+      throw new AssertionError();
+    }
     if (e.typeBounds().isEmpty()) {
       return new TypeParameterTreeImpl(
         convertSimpleName(e.getName())
@@ -946,6 +955,9 @@ public class JParser {
   private TypeTree applyExtraDimensions(TypeTree type, List extraDimensions) {
     for (Object o : extraDimensions) {
       Dimension e = (Dimension) o;
+      if (ASSERTIONS && !e.annotations().isEmpty()) {
+        throw new AssertionError();
+      }
       type = new JavaTree.ArrayTypeTreeImpl(
         type,
         Collections.emptyList(), // FIXME annotations
@@ -1963,6 +1975,9 @@ public class JParser {
       case ASTNode.PRIMITIVE_TYPE: {
         PrimitiveType e = (PrimitiveType) node;
         // FIXME e.annotations()
+        if (ASSERTIONS && !e.annotations().isEmpty()) {
+          throw new AssertionError();
+        }
         switch (e.getPrimitiveTypeCode().toString()) {
           default:
             throw new IllegalStateException(e.getPrimitiveTypeCode().toString());
@@ -2073,7 +2088,7 @@ public class JParser {
       case ASTNode.WILDCARD_TYPE: {
         WildcardType e = (WildcardType) node;
         // FIXME e.annotations()
-        if (!e.annotations().isEmpty()) {
+        if (ASSERTIONS && !e.annotations().isEmpty()) {
           throw new AssertionError();
         }
         if (e.getBound() == null) {
