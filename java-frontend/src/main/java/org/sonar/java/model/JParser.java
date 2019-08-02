@@ -981,23 +981,6 @@ public class JParser {
     return t;
   }
 
-  private VariableTreeImpl createVariable(VariableDeclarationStatement declaration, VariableDeclarationFragment fragment) {
-    VariableTreeImpl t = new VariableTreeImpl(
-      convertSimpleName(fragment.getName())
-    ).completeType(
-      // FIXME type should be shared between all fragments
-      applyExtraDimensions(convertType(declaration.getType()), fragment.extraDimensions())
-    );
-    if (fragment.getInitializer() != null) {
-      t.completeTypeAndInitializer(
-        t.type(),
-        firstTokenAfter(fragment.getName(), TerminalTokens.TokenNameEQUAL),
-        convertExpression(fragment.getInitializer())
-      );
-    }
-    return t;
-  }
-
   private void addVariableToList(VariableDeclarationExpression e2, List list) {
     TypeTree type = convertType(e2.getType());
 
@@ -1045,14 +1028,27 @@ public class JParser {
     );
   }
 
-  private void addStatementToList(Statement node, List statements) {
+  private void addStatementToList(Statement node, List<StatementTree> statements) {
     if (node.getNodeType() == ASTNode.VARIABLE_DECLARATION_STATEMENT) {
       VariableDeclarationStatement e = (VariableDeclarationStatement) node;
+      TypeTree tType = convertType(e.getType());
       ModifiersTreeImpl modifiers = convertModifiers(e.modifiers());
       for (int i = 0; i < e.fragments().size(); i++) {
         VariableDeclarationFragment fragment = (VariableDeclarationFragment) e.fragments().get(i);
-        VariableTreeImpl t = createVariable(e, fragment)
-          .completeModifiers(modifiers);
+        VariableTreeImpl t = new VariableTreeImpl(
+          convertSimpleName(fragment.getName())
+        ).completeType(
+          applyExtraDimensions(tType, fragment.extraDimensions())
+        ).completeModifiers(
+          modifiers
+        );
+        if (fragment.getInitializer() != null) {
+          t.completeTypeAndInitializer(
+            tType,
+            firstTokenAfter(fragment.getName(), TerminalTokens.TokenNameEQUAL),
+            convertExpression(fragment.getInitializer())
+          );
+        }
         t.setEndToken(
           i < e.fragments().size() - 1 ? lastTokenIn(e, TerminalTokens.TokenNameCOMMA) : lastTokenIn(e, TerminalTokens.TokenNameSEMICOLON)
         );

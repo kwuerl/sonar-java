@@ -24,15 +24,18 @@ import org.junit.Test;
 import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.bytecode.loader.SquidClassLoader;
 import org.sonar.java.resolve.SemanticModel;
+import org.sonar.plugins.java.api.tree.BlockTree;
+import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.VariableTree;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.Collections;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.fail;
 
 /**
@@ -145,6 +148,18 @@ public class JParserTest {
   }
 
   @Test
+  public void statement_variable_declaration() {
+    CompilationUnitTree t = test("class C { void m() { int a, b; } }");
+    ClassTree c = (ClassTree) t.types().get(0);
+    MethodTree m = (MethodTree) c.members().get(0);
+    BlockTree s = m.block();
+    assertNotNull(s);
+    VariableTree s1 = (VariableTree) s.body().get(0);
+    VariableTree s2 = (VariableTree) s.body().get(1);
+    assertSame(s1.type(), s2.type());
+  }
+
+  @Test
   public void statement_for() {
     test("class C { void m() { for ( int i , j ; ; ) ; } }");
     test("class C { void m() { for ( int i = 0, j = 0 ; ; ) ; } }");
@@ -206,7 +221,7 @@ public class JParserTest {
     test("class C { Object m() { return " + expression + " ; } }");
   }
 
-  private static void test(String source) {
+  private static CompilationUnitTree test(String source) {
     TreeFormatter formatter = new TreeFormatter();
     formatter.showTokens = true;
 
@@ -215,10 +230,12 @@ public class JParserTest {
     String expected = formatter.toString(oldTree);
     System.out.println(expected);
 
-    Tree newTree = JParser.parse(source);
+    CompilationUnitTree newTree = JParser.parse(source);
     String actual = formatter.toString(newTree);
 
     assertEquals(expected, actual);
+
+    return newTree;
   }
 
 }
