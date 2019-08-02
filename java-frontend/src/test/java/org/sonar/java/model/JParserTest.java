@@ -222,6 +222,12 @@ public class JParserTest {
     testExpression("C<T, T>::new");
   }
 
+  @org.junit.Ignore
+  @Test
+  public void expression_super_method_invocation() {
+    test("class C { class Inner { Inner() { C.super.toString(); } } }");
+  }
+
   @Test
   public void type_qualified() {
     testExpression("new a<b>. @Annotation c()");

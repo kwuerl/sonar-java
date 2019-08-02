@@ -1729,10 +1729,10 @@ public class JParser {
           outermostSelect = new MemberSelectExpressionTreeImpl(
             new MemberSelectExpressionTreeImpl(
               convertExpression(e.getQualifier()),
-              null,
+              firstTokenAfter(e.getQualifier(), TerminalTokens.TokenNameDOT),
               new IdentifierTreeImpl(firstTokenAfter(e.getQualifier(), TerminalTokens.TokenNamesuper))
             ),
-            null,
+            null, // FIXME second dot token after qualifier
             convertSimpleName(e.getName())
           );
         }
