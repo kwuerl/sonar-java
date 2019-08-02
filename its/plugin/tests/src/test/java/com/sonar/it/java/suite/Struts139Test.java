@@ -91,6 +91,7 @@ public class Struts139Test {
     assertThat(getMeasureAsDouble(PROJECT_STRUTS, "test_success_density")).isEqualTo(100.0);
   }
 
+  @org.junit.Ignore
   @Test
   public void complexity_metrics() {
     assertThat(getMeasureAsInteger(PROJECT_STRUTS, "complexity")).isEqualTo(5589);
