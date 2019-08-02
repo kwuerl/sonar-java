@@ -1363,14 +1363,14 @@ public class JParser {
         ConstructorInvocation e = (ConstructorInvocation) node;
 
         ArgumentListTreeImpl arguments = convertArguments(
-          firstTokenIn(e, TerminalTokens.TokenNameLPAREN), // FIXME first only in absence of type arguments,
+          e.arguments().isEmpty() ? lastTokenIn(e, TerminalTokens.TokenNameLPAREN) : firstTokenBefore((ASTNode) e.arguments().get(0), TerminalTokens.TokenNameLPAREN),
           e.arguments(),
           lastTokenIn(e, TerminalTokens.TokenNameRPAREN)
         );
 
         return new ExpressionStatementTreeImpl(
           new MethodInvocationTreeImpl(
-            new IdentifierTreeImpl(firstTokenIn(e, TerminalTokens.TokenNamethis)), // FIXME first only in absence of type arguments
+            new IdentifierTreeImpl(e.arguments().isEmpty() ? lastTokenIn(e, TerminalTokens.TokenNamethis) : firstTokenBefore((ASTNode) e.arguments().get(0), TerminalTokens.TokenNamethis)),
             convertTypeArguments(e.typeArguments()),
             arguments
           ),
