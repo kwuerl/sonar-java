@@ -188,6 +188,11 @@ public class JParserTest {
   }
 
   @Test
+  public void statement_constructor_invocation() {
+    test("class C<T> { C() { <T>this(null); } C(Object o) { } }");
+  }
+
+  @Test
   public void expression_literal() {
     testExpression("-2147483648"); // Integer.MIN_VALUE
     testExpression("-9223372036854775808L"); // Long.MIN_VALUE

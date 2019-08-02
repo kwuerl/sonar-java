@@ -1362,12 +1362,6 @@ public class JParser {
       case ASTNode.CONSTRUCTOR_INVOCATION: {
         ConstructorInvocation e = (ConstructorInvocation) node;
 
-        TypeArgumentListTreeImpl typeArguments = null;
-        if (!e.typeArguments().isEmpty()) {
-          // TODO
-          throw new AssertionError();
-        }
-
         ArgumentListTreeImpl arguments = convertArguments(
           firstTokenIn(e, TerminalTokens.TokenNameLPAREN), // FIXME first only in absence of type arguments,
           e.arguments(),
@@ -1377,7 +1371,7 @@ public class JParser {
         return new ExpressionStatementTreeImpl(
           new MethodInvocationTreeImpl(
             new IdentifierTreeImpl(firstTokenIn(e, TerminalTokens.TokenNamethis)), // FIXME first only in absence of type arguments
-            typeArguments,
+            convertTypeArguments(e.typeArguments()),
             arguments
           ),
           lastTokenIn(e, TerminalTokens.TokenNameSEMICOLON)
